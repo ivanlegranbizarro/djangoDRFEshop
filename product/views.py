@@ -43,7 +43,13 @@ def get_product(request, pk):
 @api_view(["POST"])
 def new_product(request):
     data = request.data
-    product = Product.objects.create(**data)
-    serializer = ProductSerializer(product, many=False)
 
-    return Response(serializer.data)
+    serializer = ProductSerializer(data=data)
+
+    if serializer.is_valid():
+        product = Product.objects.create(**data)
+        serializer = ProductSerializer(product, many=False)
+        return Response(serializer.data)
+
+    else:
+        return Response(serializer.errors)

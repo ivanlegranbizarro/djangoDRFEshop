@@ -17,7 +17,9 @@ class Category(models.TextChoices):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=100, validators=[MinLengthValidator(3)])
+    name = models.CharField(
+        max_length=100, validators=[MinLengthValidator(3)], unique=True
+    )
     slug = models.SlugField(max_length=100, unique=True, blank=True, null=True)
     description = models.TextField(max_length=500, validators=[MinLengthValidator(10)])
     price = models.DecimalField(max_digits=6, decimal_places=2)
@@ -36,6 +38,17 @@ class Product(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+    constraints = [
+        models.CheckConstraint(
+            check=models.Q(name__isnull=False) & models.Q(name__exact=""),
+            name="name_not_empty",
+        ),
+        models.CheckConstraint(
+            check=models.Q(description__isnull=False) & models.Q(description__exact=""),
+            name="description_not_empty",
+        ),
+    ]
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
