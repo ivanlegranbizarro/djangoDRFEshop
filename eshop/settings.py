@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "django_filters",
     "product",
+    "storages",
 ]
 
 MIDDLEWARE = [
@@ -88,6 +90,10 @@ DATABASES = {
     }
 }
 
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "utils.custom_exception_handler.custom_exception_handler",
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -129,3 +135,14 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_SIGNATURE_VERSION = config("AWS_S3_SIGNATURE_VERSION")
+AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME")
+AWS_S3_FILE_OVERWRITE = config("AWS_S3_FILE_OVERWRITE", default=False, cast=bool)
+AWS_DEFAULT_ACL = config("AWS_DEFAULT_ACL")
+AWS_S3_VERIFY = config("AWS_S3_VERIFY", default=False, cast=bool)
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
