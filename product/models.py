@@ -24,6 +24,9 @@ class Product(models.Model):
     brand = models.CharField(max_length=50, validators=[MinLengthValidator(3)])
     category = models.CharField(max_length=50, choices=Category.choices)
     ratings = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
+    image1 = models.ImageField(upload_to="products", null=True, blank=True)
+    image2 = models.ImageField(upload_to="products", null=True, blank=True)
+    image3 = models.ImageField(upload_to="products", null=True, blank=True)
     stock = models.IntegerField(default=0)
     user = models.ForeignKey(
         User, on_delete=models.SET_NULL, related_name="products", null=True

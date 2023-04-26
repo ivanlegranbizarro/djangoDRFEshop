@@ -38,3 +38,12 @@ def get_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
     serializer = ProductSerializer(product, many=False)
     return Response(serializer.data)
+
+
+@api_view(["POST"])
+def new_product(request):
+    data = request.data
+    product = Product.objects.create(**data)
+    serializer = ProductSerializer(product, many=False)
+
+    return Response(serializer.data)
