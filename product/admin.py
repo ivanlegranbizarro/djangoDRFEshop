@@ -5,7 +5,7 @@ from .models import Product, Review
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    readonly_fields = ("slug", "created_at", "updated_at", "user", "ratings")
+    readonly_fields = ("slug", "created_at", "updated_at", "ratings")
     list_display = (
         "id",
         "name",

@@ -1,13 +1,6 @@
 from rest_framework import serializers
 
-from .models import MyUser, Product, Review
-
-
-class ProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = "__all__"
-        extra_kwargs = {"user": {"read_only": True}, "ratings": {"read_only": True}}
+from .models import Product, Review
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -17,3 +10,27 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = "__all__"
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    reviews = ReviewSerializer(many=True, read_only=True)
+    user = serializers.CharField(source="user.username", read_only=True)
+
+    class Meta:
+        model = Product
+        fields = (
+            "id",
+            "user",
+            "name",
+            "description",
+            "price",
+            "category",
+            "brand",
+            "stock",
+            "image1",
+            "image2",
+            "image3",
+            "ratings",
+            "reviews",
+        )
+        extra_kwargs = {"user": {"read_only": True}, "ratings": {"read_only": True}}

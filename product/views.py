@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
 from .filters import ProductsFilter
@@ -149,3 +149,20 @@ def update_review(request, pk):
 
     else:
         return Response(serializer.errors)
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated | IsAdminUser])
+def delete_review(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+    if request.user != review.user or request.user != request.user.is_superuser:
+        return Response(
+            {"error": "You do not have permission to perform this action."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    review.delete()
+    product = review.product
+    rating = product.reviews.aggregate(Avg("rating"))["rating__avg"]
+    product.ratings = rating
+    product.save()
+    return Response("Review deleted successfully", status=status.HTTP_204_NO_CONTENT)
