@@ -14,9 +14,3 @@ class SignUpSerializer(serializers.ModelSerializer):
             "last_name": {"required": True},
             "username": {"required": True},
         }
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MyUser
-        fields = ["email", "first_name", "last_name", "username"]
