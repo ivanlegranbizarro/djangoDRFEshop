@@ -59,8 +59,16 @@ def new_product(request):
 
 
 @api_view(["PUT"])
+@permission_classes([IsAuthenticated])
 def update_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
+
+    if request.user != product.user:
+        return Response(
+            {"error": "You do not have permission to perform this action."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
     data = request.data
 
     serializer = ProductSerializer(instance=product, data=data, partial=True)
@@ -74,7 +82,13 @@ def update_product(request, pk):
 
 
 @api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
 def delete_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
+    if request.user != product.user:
+        return Response(
+            {"error": "You do not have permission to perform this action."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
     product.delete()
     return Response("Product deleted successfully", status=status.HTTP_204_NO_CONTENT)
