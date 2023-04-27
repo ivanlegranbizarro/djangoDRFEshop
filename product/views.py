@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -49,7 +50,7 @@ def new_product(request):
     if serializer.is_valid():
         product = Product.objects.create(**data)
         serializer = ProductSerializer(product, many=False)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     else:
         return Response(serializer.errors)
@@ -64,7 +65,7 @@ def update_product(request, pk):
 
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
     else:
         return Response(serializer.errors)
@@ -74,4 +75,4 @@ def update_product(request, pk):
 def delete_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
     product.delete()
-    return Response("Product deleted successfully")
+    return Response("Product deleted successfully", status=status.HTTP_204_NO_CONTENT)

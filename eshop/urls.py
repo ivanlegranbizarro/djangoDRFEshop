@@ -21,6 +21,7 @@ from utils.error_views import handler404, handler500
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/products/", include("product.urls", namespace="product")),
+    path("api/account/", include("account.urls", namespace="account")),
 ]
 
 
