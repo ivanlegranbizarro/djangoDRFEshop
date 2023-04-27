@@ -60,7 +60,7 @@ def update_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
     data = request.data
 
-    serializer = ProductSerializer(instance=product, data=data)
+    serializer = ProductSerializer(instance=product, data=data, partial=True)
 
     if serializer.is_valid():
         serializer.save()
@@ -68,3 +68,10 @@ def update_product(request, pk):
 
     else:
         return Response(serializer.errors)
+
+
+@api_view(["DELETE"])
+def delete_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    product.delete()
+    return Response("Product deleted successfully")
