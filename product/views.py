@@ -53,3 +53,18 @@ def new_product(request):
 
     else:
         return Response(serializer.errors)
+
+
+@api_view(["PUT"])
+def update_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    data = request.data
+
+    serializer = ProductSerializer(instance=product, data=data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+
+    else:
+        return Response(serializer.errors)
