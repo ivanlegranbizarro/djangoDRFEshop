@@ -94,7 +94,7 @@ DATABASES = {
 }
 
 REST_FRAMEWORK = {
-    "EXCEPTION_HANDLER": "utils.custom_exception_handler.custom_exception_handler",
+    # "EXCEPTION_HANDLER": "utils.custom_exception_handler.custom_exception_handler",
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),

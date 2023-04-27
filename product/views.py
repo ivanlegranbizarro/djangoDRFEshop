@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -98,25 +99,29 @@ def delete_product(request, pk):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def add_review(request, pk):
+    user = request.user
     product = get_object_or_404(Product, pk=pk)
     data = request.data
+    data["user"] = user.id
     data["product"] = product.id
-    data["user"] = request.user.id
 
     serializer = ReviewSerializer(data=data)
 
     if serializer.is_valid():
-        review = Review.objects.create(**data)
-        serializer = ReviewSerializer(review, many=False)
+        try:
+            review = serializer.save(user=user, product=product)
+            serializer = ReviewSerializer(review, many=False)
+            rating = product.reviews.aggregate(Avg("rating"))["rating__avg"]
+            product.ratings = rating
+            product.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except IntegrityError:
+            return Response(
+                {"error": "You have already reviewed this product."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        rating = product.reviews.aggregate(Avg("rating"))["rating__avg"]
-        product.ratings = rating
-        product.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    else:
-        return Response(serializer.errors)
+    return Response(serializer.errors)
 
 
 @api_view(["PUT"])

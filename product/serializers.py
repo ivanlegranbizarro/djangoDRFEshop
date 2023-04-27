@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Product, Review
+from .models import MyUser, Product, Review
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -11,6 +11,9 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source="user.username", read_only=True)
+    product = serializers.CharField(source="product.name", read_only=True)
+
     class Meta:
         model = Review
         fields = "__all__"
