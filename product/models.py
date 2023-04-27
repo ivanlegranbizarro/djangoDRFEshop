@@ -1,7 +1,12 @@
-from account.models import MyUser
-from django.core.validators import MinLengthValidator
+from django.core.validators import (
+    MaxValueValidator,
+    MinLengthValidator,
+    MinValueValidator,
+)
 from django.db import models
 from django.utils.text import slugify
+
+from account.models import MyUser
 
 # Create your models here.
 
@@ -56,3 +61,27 @@ class Product(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class Review(models.Model):
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="reviews"
+    )
+    user = models.ForeignKey(
+        MyUser, on_delete=models.CASCADE, related_name="reviews", null=True
+    )
+    rating = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    comment = models.TextField(
+        max_length=500, validators=[MinLengthValidator(10)], null=True, blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    edited_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        unique_together = ["product", "user"]
+
+    def __str__(self) -> str:
+        return self.comment

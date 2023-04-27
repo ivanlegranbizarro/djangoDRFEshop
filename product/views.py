@@ -1,3 +1,4 @@
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -6,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .filters import ProductsFilter
-from .models import Product
-from .serializers import ProductSerializer
+from .models import Product, Review
+from .serializers import ProductSerializer, ReviewSerializer
 
 # Create your views here.
 
@@ -92,3 +93,54 @@ def delete_product(request, pk):
         )
     product.delete()
     return Response("Product deleted successfully", status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def add_review(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    data = request.data
+    data["product"] = product.id
+    data["user"] = request.user.id
+
+    serializer = ReviewSerializer(data=data)
+
+    if serializer.is_valid():
+        review = Review.objects.create(**data)
+        serializer = ReviewSerializer(review, many=False)
+
+        rating = product.reviews.aggregate(Avg("rating"))["rating__avg"]
+        product.ratings = rating
+        product.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    else:
+        return Response(serializer.errors)
+
+
+@api_view(["PUT"])
+@permission_classes([IsAuthenticated])
+def update_review(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+    if request.user != review.user:
+        return Response(
+            {"error": "You do not have permission to perform this action."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    data = request.data
+
+    serializer = ReviewSerializer(instance=review, data=data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+
+        product = review.product
+        rating = product.reviews.aggregate(Avg("rating"))["rating__avg"]
+        product.ratings = rating
+        product.save()
+
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+    else:
+        return Response(serializer.errors)
