@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     "product",
     "storages",
     "django_cleanup.apps.CleanupConfig",
-    "rest_framework_simplejwt",
     "account",
 ]
 
@@ -101,11 +100,6 @@ REST_FRAMEWORK = {
     ),
 }
 
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -158,3 +152,6 @@ AWS_DEFAULT_ACL = None
 AWS_S3_VERIFY = config("AWS_S3_VERIFY", default=False, cast=bool)
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+
+AUTH_USER_MODEL = "account.MyUser"

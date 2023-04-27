@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from rest_framework_simplejwt.views import (TokenObtainPairView,
+                                            TokenRefreshView)
 
 from utils.error_views import handler404, handler500
 
@@ -22,6 +24,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/products/", include("product.urls", namespace="product")),
     path("api/account/", include("account.urls", namespace="account")),
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 ]
 
 

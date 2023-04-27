@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from account.models import MyUser
 from django.core.validators import MinLengthValidator
 from django.db import models
 from django.utils.text import slugify
@@ -31,7 +31,7 @@ class Product(models.Model):
     image3 = models.ImageField(upload_to="products", null=True, blank=True)
     stock = models.IntegerField(default=0)
     user = models.ForeignKey(
-        User, on_delete=models.SET_NULL, related_name="products", null=True
+        MyUser, on_delete=models.SET_NULL, related_name="products", null=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
