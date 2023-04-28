@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -59,7 +59,7 @@ def new_order(request):
 @permission_classes([IsAuthenticated])
 def get_orders(request):
     user = request.user
-    orders = Order.objects.filter(user=user)
+    orders = get_list_or_404(Order, user=user)
     serializer = OrderSerializer(orders, many=True)
     return Response(serializer.data)
 
@@ -67,7 +67,6 @@ def get_orders(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_order_by_id(request, pk):
-    user = request.user
-    order = Order.objects.get(id=pk)
+    order = get_object_or_404(Order, id=pk)
     serializer = OrderSerializer(order, many=False)
     return Response(serializer.data)
