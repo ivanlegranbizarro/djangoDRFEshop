@@ -59,7 +59,7 @@ def new_order(request):
 @permission_classes([IsAuthenticated])
 def get_orders(request):
     user = request.user
-    orders = user.order_set.all()
+    orders = Order.objects.filter(user=user)
     serializer = OrderSerializer(orders, many=True)
     return Response(serializer.data)
 
@@ -68,6 +68,6 @@ def get_orders(request):
 @permission_classes([IsAuthenticated])
 def get_order_by_id(request, pk):
     user = request.user
-    order = user.order_set.get(id=pk)
+    order = Order.objects.get(id=pk)
     serializer = OrderSerializer(order, many=False)
     return Response(serializer.data)
