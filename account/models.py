@@ -4,6 +4,8 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.db import models
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 
 class MyAccountManager(BaseUserManager):
@@ -70,3 +72,21 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return True
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(
+        MyUser, on_delete=models.CASCADE, related_name="profile"
+    )
+    reset_password_token = models.CharField(max_length=50, blank=True, null=True)
+    reset_password_expire = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username
+
+
+@receiver(post_save, sender=MyUser)
+def save_profile(sender, instance, created, **kwargs):
+    if created:
+        profile = Profile(user=instance)
+        profile.save()

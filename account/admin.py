@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import MyUser
+from .models import MyUser, Profile
 
 # Register your models here.
 
@@ -20,3 +20,6 @@ class MyUserAdmin(admin.ModelAdmin):
     ordering = ("email",)
     filter_horizontal = ()
     fieldsets = ()
+
+
+admin.site.register(Profile)
